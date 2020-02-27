@@ -9,6 +9,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\components\JSON;
 
 class SiteController extends Controller
 {
@@ -128,6 +129,13 @@ class SiteController extends Controller
 
     public function actionJson($username = 'TD9818')
     {
-        return $this->render('json', ['username' => $username]);
+        $json = new  JSON;
+        $allTagsUser = $json->GitTags($username);
+        if ($allTagsUser !== '-1') {
+            var_dump($allTagsUser);
+        } else {
+            print_r('Про обращении к GitHub возникла ошибка, 
+            проверьте кравильность введунного имени'); // но оно же будет и при превышении лимита 60 запростов
+        }
     }
 }
