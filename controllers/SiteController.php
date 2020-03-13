@@ -131,8 +131,8 @@ class SiteController extends Controller
 
     public function actionJson()
     {
-        $username = '17291481';
+        $userID = '5554467';
         $json = new  JSON;
-        $json->CreateFileJson($username);
+        $json->CreateFileJson($userID);
     }
 }
