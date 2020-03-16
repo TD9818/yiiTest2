@@ -18,10 +18,29 @@ class JSON
     private function GetFile($nameID)
     {
         $fileObject = [];
-        foreach ($this->ClientApiGitlab('users', $nameID, 'projects') as $repo) {
+        foreach (
+            $this->ClientApiGitlab(
+                URL,
+                APIV,
+                'users',
+                $nameID,
+                'projects'
+            )
+            as
+            $repo
+        ) {
             $fileObject += [
-                $repo["name"] => $this->JsonTags($this->ClientApiGitlab('projects', $repo["id"], 'repository/tags'),
-                    $repo["name"])
+                $repo["name"] =>
+                    $this->JsonTags(
+                        $this->ClientApiGitlab(
+                            URL,
+                            APIV,
+                            'projects',
+                            $repo["id"],
+                            'repository/tags'
+                        ),
+                        $repo["name"]
+                    )
             ];
         }
         return json_encode($fileObject);
@@ -56,14 +75,14 @@ class JSON
         return $resultJsonInOneRepos;
     }
 
-    public function ClientApiGitlab($param0, $nameID, $param1)
+    public function ClientApiGitlab($url, $apiVer, $param0, $nameID, $param1)
     {
         //$param0 - projects or users
         //$param1 - repository/tags (if $param0 = 'projects') or projects (if $param0 = 'users')
         $client = new Client();
         $response = $client->createRequest()
             ->setMethod('GET')
-            ->setUrl(URL . APIV . $param0 . '/' . $nameID . '/' . $param1 . '/')
+            ->setUrl($url . $apiVer . $param0 . '/' . $nameID . '/' . $param1 . '/')
             ->setFormat(Client::FORMAT_JSON)
             ->send();
         return ($response->data);
