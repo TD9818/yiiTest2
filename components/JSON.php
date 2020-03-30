@@ -2,89 +2,94 @@
 
 namespace app\components;
 
+use Yii;
 use yii\httpclient\Client;
+use app\models\Repos;
 
-define('URL', 'https://gitlab.com/');
-define('APIV', 'api/v4/');
+Yii::setAlias('@pathFile', 'Tags.json');
 
 class JSON
 {
-    public function CreateFileJson($nameID)
+
+    public function CreateFileJson()
     {
-        $filename = '../components/Tags.json';
-        file_put_contents($filename, $this->GetFile($nameID));
+        file_put_contents(Yii::getAlias('@pathFile'), $this->GetFile());
     }
 
-    private function GetFile($nameID)
+    private function GetFile()
     {
+        $repos = Repos::find()
+            ->orderBy('id')
+            ->all();
         $fileObject = [];
-        foreach (
-            $this->ClientApiGitlab(
-                URL,
-                APIV,
-                'users',
-                $nameID,
-                'projects'
-            )
-            as
-            $repo
-        ) {
+
+        foreach ($repos as $repo) {
             $fileObject += [
-                $repo["name"] =>
+                $repo->name =>
                     $this->JsonTags(
-                        $this->ClientApiGitlab(
-                            URL,
-                            APIV,
+                        $this->ClientApiGitlab($this->ConstructURL(
+                            Yii::$app->params['URLgitlab'],
+                            Yii::$app->params['API_Vgitlab'],
                             'projects',
-                            $repo["id"],
+                            $repo->progect,
                             'repository/tags'
-                        ),
-                        $repo["name"]
+                        )),
+                        $this->ClientApiGitlab($this->ConstructURL(
+                            Yii::$app->params['URLgitlab'],
+                            Yii::$app->params['API_Vgitlab'],
+                            'projects',
+                            $repo->progect,
+                            'repository/files/composer.json/raw?ref=master'
+                        )),
+                        $repo->name
                     )
             ];
         }
         return json_encode($fileObject);
     }
 
-    private function JsonTags($allTagsRepo, $nameRepos)
+    private function JsonTags($allTagsRepo, $contentConfig, $nameRepos)
     {
         $resultJsonInOneRepos = [];
         foreach ($allTagsRepo as $tagRepo) {
             $resultJsonInOneRepos += [
-                $tagRepo["name"] => [
-                    "name" => $nameRepos,
-                    "description" => $tagRepo["release"]["description"],
-                    "type" => null,
-                    "require" => null,
-                    "version" => $tagRepo["name"],
-                    "extra" => null,
-                    "source" => [
-                        "url" => $tagRepo["commit"]["web_url"],
-                        "type" => 'git',
-                        "reference" => $tagRepo["name"],
+                $tagRepo['name'] => [
+                    'name' => $nameRepos,
+                    'description' => $tagRepo['release']['description'],
+                    'type' => $contentConfig['type'],
+                    'require' => $contentConfig['require'],
+                    'version' => $tagRepo['name'],
+                    'extra' => $contentConfig['extra'],
+                    'source' => [
+                        'url' => $tagRepo['commit']['web_url'],
+                        'type' => 'git',
+                        'reference' => $tagRepo['name'],
                     ],
-                    "autoload" => [
-                        "psr-4" => [
-                            //тут не понял принцип выборки, да и впринципе
-                            // не понял autoload (как и то что задал константами)
-                        ],
-                    ],
+                    'autoload' => $contentConfig['autoload'],
                 ],
             ];
+
         }
         return $resultJsonInOneRepos;
     }
 
-    public function ClientApiGitlab($url, $apiVer, $param0, $nameID, $param1)
+    public function ClientApiGitlab($url)
     {
-        //$param0 - projects or users
-        //$param1 - repository/tags (if $param0 = 'projects') or projects (if $param0 = 'users')
         $client = new Client();
         $response = $client->createRequest()
             ->setMethod('GET')
-            ->setUrl($url . $apiVer . $param0 . '/' . $nameID . '/' . $param1 . '/')
+            ->setUrl($url)
             ->setFormat(Client::FORMAT_JSON)
             ->send();
         return ($response->data);
+    }
+
+    public function ConstructURL($url, $apiVer, $param0, $id, $param1)
+    {
+        //$param0 - projects or users
+        //$param1 - repository/tags  (if $param0 = 'projects')
+        //          repository/files/composer.json/raw?ref=master  (if $param0 = 'projects')
+        // or       projects (if $param0 = 'users')
+        return $url . $apiVer . $param0 . '/' . $id . '/' . $param1;
     }
 }

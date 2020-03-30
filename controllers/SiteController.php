@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\MySQL_construct;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -9,7 +10,6 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
-use app\components\JSON;
 
 class SiteController extends Controller
 {
@@ -129,10 +129,9 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
-    public function actionJson()
+    public function actionBase()
     {
-        $userID = '5554467';
-        $json = new  JSON;
-        $json->CreateFileJson($userID);
+        $json = new  MySQL_construct;
+        $json->CreateBase();
     }
 }
