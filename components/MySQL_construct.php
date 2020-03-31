@@ -4,15 +4,15 @@
 namespace app\components;
 
 use Yii;
-//use app\components\JSON;
 use app\models\Repos;
 
 class MySQL_construct
 {
     public function GetTags($nameID)
     {
-        $i = 0;
+        $i = 1;
         $json = new JSON();
+
         foreach (
             $json->ClientApiGitlab($json->ConstructURL(
                 Yii::$app->params['URLgitlab'],
@@ -27,10 +27,9 @@ class MySQL_construct
         ) {
             $customer = new Repos();
             $customer->id = $i++;
-            $customer->progect = $repo['id'];
+            $customer->project = $repo['id'];
             $customer->name = $repo['name'];
             $customer->save();
-
         }
     }
 
@@ -42,7 +41,7 @@ class MySQL_construct
 
         foreach ($repos as $repo) {
             echo $repo->name . ': ';
-            var_dump($repo->progect);
+            var_dump($repo->project);
         }
     }
 }

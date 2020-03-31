@@ -3,7 +3,7 @@
 namespace app\commands;
 
 use Yii;
-use app\models\MigrTabl;
+use app\migrations\m200331_064952_MigrTabl;
 use yii\console\Controller;
 use yii\console\ExitCode;
 use app\components\JSON;
@@ -28,7 +28,7 @@ class TagsController extends Controller
 
     public function actionCreateb()
     {
-        $newTable = new MigrTabl();
+        $newTable = new m200331_064952_MigrTabl();
         $newTable->up();
         echo 'Database Creation Successful !!!';
         return ExitCode::OK;
@@ -36,7 +36,7 @@ class TagsController extends Controller
 
     public function actionDeleteb()
     {
-        $newTable = new MigrTabl();
+        $newTable = new m200331_064952_MigrTabl();
         $newTable->down();
         echo 'Database deletion was successful !!!';
         return ExitCode::OK;

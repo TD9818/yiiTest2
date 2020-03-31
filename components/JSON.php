@@ -31,14 +31,14 @@ class JSON
                             Yii::$app->params['URLgitlab'],
                             Yii::$app->params['API_Vgitlab'],
                             'projects',
-                            $repo->progect,
+                            $repo->project,
                             'repository/tags'
                         )),
                         $this->ClientApiGitlab($this->ConstructURL(
                             Yii::$app->params['URLgitlab'],
                             Yii::$app->params['API_Vgitlab'],
                             'projects',
-                            $repo->progect,
+                            $repo->project,
                             'repository/files/composer.json/raw?ref=master'
                         )),
                         $repo->name
