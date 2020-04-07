@@ -8,29 +8,49 @@ use app\models\Repos;
 
 class MySQL_construct
 {
-    public function GetTags($nameID)
+    const URLToID = 'users';
+    const URLAfterID = 'projects';
+
+    private $url;
+    private $api;
+
+    function __construct()
+    {
+        $this->url = Yii::$app->params['URLgitlab'];
+        $this->api = Yii::$app->params['API_Vgitlab'];
+    }
+
+    public function getTags($nameID)
     {
         $i = 1;
         $json = new JSON();
 
+
         foreach (
-            $json->ClientApiGitlab($json->ConstructURL(
-                Yii::$app->params['URLgitlab'],
-                Yii::$app->params['API_Vgitlab'],
-                'users',
-                $nameID,
-                'projects'
-            )
+            $json->newClientApiGitlab(
+                $json->constructURL(
+                    $this->url,
+                    $this->api,
+                    self::URLToID,
+                    $nameID,
+                    self::URLAfterID
+                )
             )
             as
             $repo
         ) {
-            $customer = new Repos();
-            $customer->id = $i++;
-            $customer->project = $repo['id'];
-            $customer->name = $repo['name'];
-            $customer->save();
+            $customer = new Repos(
+                [
+                    'id' => $i++,
+                    'project' => $repo['id'],
+                    'name' => $repo['name']
+                ]
+            );
+            if (!$customer->save()) {
+                return false;
+            }
         }
+        return true;
     }
 
     public function Display()
@@ -40,8 +60,7 @@ class MySQL_construct
             ->all();
 
         foreach ($repos as $repo) {
-            echo $repo->name . ': ';
-            var_dump($repo->project);
+            echo $repo->name . ': ' . $repo->project . "\n";
         }
     }
 }

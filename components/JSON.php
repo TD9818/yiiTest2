@@ -10,13 +10,21 @@ Yii::setAlias('@pathFile', 'Tags.json');
 
 class JSON
 {
+    const URLToID = 'projects';
+    const URLAfterIDTags = 'repository/tags';
+    const URLAfterIDComposer = 'repository/files/composer.json/raw?ref=';
 
-    public function CreateFileJson()
+    private $url;
+    private $api;
+
+
+    function __construct()
     {
-        file_put_contents(Yii::getAlias('@pathFile'), $this->GetFile());
+        $this->url = Yii::$app->params['URLgitlab'];
+        $this->api = Yii::$app->params['API_Vgitlab'];
     }
 
-    private function GetFile()
+    public function GetFile($ref)
     {
         $repos = Repos::find()
             ->orderBy('id')
@@ -26,21 +34,25 @@ class JSON
         foreach ($repos as $repo) {
             $fileObject += [
                 $repo->name =>
-                    $this->JsonTags(
-                        $this->ClientApiGitlab($this->ConstructURL(
-                            Yii::$app->params['URLgitlab'],
-                            Yii::$app->params['API_Vgitlab'],
-                            'projects',
-                            $repo->project,
-                            'repository/tags'
-                        )),
-                        $this->ClientApiGitlab($this->ConstructURL(
-                            Yii::$app->params['URLgitlab'],
-                            Yii::$app->params['API_Vgitlab'],
-                            'projects',
-                            $repo->project,
-                            'repository/files/composer.json/raw?ref=master'
-                        )),
+                    $this->getJsonTags(
+                        $this->newClientApiGitlab(
+                            $this->constructURL(
+                                $this->url,
+                                $this->api,
+                                self::URLToID,
+                                $repo->project,
+                                self::URLAfterIDTags
+                            )
+                        ),
+                        $this->newClientApiGitlab(
+                            $this->constructURL(
+                                $this->url,
+                                $this->api,
+                                self::URLToID,
+                                $repo->project,
+                                self::URLAfterIDComposer . $ref
+                            )
+                        ),
                         $repo->name
                     )
             ];
@@ -48,7 +60,7 @@ class JSON
         return json_encode($fileObject);
     }
 
-    private function JsonTags($allTagsRepo, $contentConfig, $nameRepos)
+    private function getJsonTags($allTagsRepo, $contentConfig, $nameRepos)
     {
         $resultJsonInOneRepos = [];
         foreach ($allTagsRepo as $tagRepo) {
@@ -68,28 +80,22 @@ class JSON
                     'autoload' => $contentConfig['autoload'],
                 ],
             ];
-
         }
         return $resultJsonInOneRepos;
     }
 
-    public function ClientApiGitlab($url)
+    public function newClientApiGitlab($url)
     {
         $client = new Client();
         $response = $client->createRequest()
-            ->setMethod('GET')
             ->setUrl($url)
             ->setFormat(Client::FORMAT_JSON)
             ->send();
         return ($response->data);
     }
 
-    public function ConstructURL($url, $apiVer, $param0, $id, $param1)
+    public function constructURL($url, $apiVer, $to, $id, $after)
     {
-        //$param0 - projects or users
-        //$param1 - repository/tags  (if $param0 = 'projects')
-        //          repository/files/composer.json/raw?ref=master  (if $param0 = 'projects')
-        // or       projects (if $param0 = 'users')
-        return $url . $apiVer . $param0 . '/' . $id . '/' . $param1;
+        return $url . $apiVer . $to . '/' . $id . '/' . $after;
     }
 }

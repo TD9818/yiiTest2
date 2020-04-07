@@ -6,7 +6,7 @@ use Yii;
 use app\migrations\m200331_064952_MigrTabl;
 use yii\console\Controller;
 use yii\console\ExitCode;
-use app\components\JSON;
+use app\components\writeFile\CreateJson;
 use app\components\MySQL_construct;
 
 class TagsController extends Controller
@@ -20,9 +20,9 @@ class TagsController extends Controller
 
     public function actionJson()
     {
-        $json = new JSON;
-        $json->CreateFileJson();
-        echo 'Database Creation Successful !!!';
+        $json = new CreateJson;
+        $json->saveFags();
+        echo 'JSON file Creation Successful !!!';
         return ExitCode::OK;
     }
 
@@ -45,8 +45,11 @@ class TagsController extends Controller
     public function actionAddTagsInBase()
     {
         $newTable = new MySQL_construct();
-        $newTable->GetTags(Yii::$app->params['userID']);
-        echo 'Data collected successfully !!!';
+        if ($newTable->getTags(Yii::$app->params['userID'])) {
+            echo 'Data collected successfully !!!';
+        } else {
+            echo 'Data was not saved !!!';
+        }
         return ExitCode::OK;
     }
 

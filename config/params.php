@@ -7,4 +7,5 @@ return [
     'userID' => '5554467',
     'URLgitlab' => 'https://gitlab.com/',
     'API_Vgitlab' => 'api/v4/',
+    'pathFileJson' => 'Tags.json',
 ];
