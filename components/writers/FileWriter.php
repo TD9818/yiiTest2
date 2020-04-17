@@ -1,14 +1,14 @@
 <?php
 
 
-namespace app\components\writeFile;
+namespace app\components\writers;
 
 
 /**
  * Class CreateJson - запись данных в файл в формате .json
  * @package app\components\writeFile
  */
-class CreateJson implements WriteInterface
+class FileWriter implements WriteInterface
 {
     private $path;
     private $url;
@@ -33,7 +33,7 @@ class CreateJson implements WriteInterface
      * @param string $content - текст записывавемый в файл
      * @return bool
      */
-    public function write($content): bool
+    public function write(string $content): bool
     {
         return file_put_contents($this->path, $content);
     }

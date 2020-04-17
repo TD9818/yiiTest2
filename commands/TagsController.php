@@ -7,7 +7,7 @@ use Yii;
 use app\migrations\m200331_064952_MigrTabl;
 use yii\console\Controller;
 use yii\console\ExitCode;
-use app\components\writeFile\CreateJson;
+use app\components\writeFile\FileWriter;
 use app\components\MySQL_construct;
 
 /**
@@ -30,7 +30,7 @@ class TagsController extends Controller
         $api = Yii::$app->params['API_Vgitlab'];
 
         $json = new JSON($url, $api);
-        $file = new CreateJson($path,  $url, $api);
+        $file = new FileWriter($path,  $url, $api);
 
         if ($file->write($json->getTags('master'))) {
             echo ' -> JSON file Creation Successful';
