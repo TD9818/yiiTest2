@@ -7,7 +7,7 @@ use Yii;
 use app\migrations\m200331_064952_MigrTabl;
 use yii\console\Controller;
 use yii\console\ExitCode;
-use app\components\writeFile\FileWriter;
+use app\components\writers\FileWriter;
 use app\components\MySQL_construct;
 
 /**
@@ -41,29 +41,15 @@ class TagsController extends Controller
     }
 
     /**
-     * actionCreateBase - создаёт таблицу в БД
-     *
-     * @return int
-     */
-    public function actionCreateBase()
-    {
-        $newTable = new m200331_064952_MigrTabl();
-        $newTable->up();
-        echo ' -> Database Creation Successful';
-        return ExitCode::OK;
-    }
-
-    /**
-     * actionDeleteBase - Удаление таблицы из БД
-     *
-     * @return int
+     * actionDeleteBase - Удаление двнных таблицы из БД
      */
     public function actionDeleteBase()
     {
-        $newTable = new m200331_064952_MigrTabl();
-        $newTable->down();
-        echo ' -> Database deletion was successful';
-        return ExitCode::OK;
+        if (MySQL_construct::deleteAll()) {
+            echo ' -> Data deleted successfully';
+        } else {
+            echo ' -> Data was not delete !!!';
+        }
     }
 
     /**

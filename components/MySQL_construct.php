@@ -107,5 +107,10 @@ class MySQL_construct
             echo $repo->name . ': ' . $repo->project . "\n";
         }
     }
+
+    public static function deleteAll()
+    {
+        return Repos::deleteAll();
+    }
 }
 

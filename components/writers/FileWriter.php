@@ -37,4 +37,5 @@ class FileWriter implements WriteInterface
     {
         return file_put_contents($this->path, $content);
     }
+
 }
