@@ -6,7 +6,6 @@ use Yii;
 use yii\httpclient\Client;
 use yii\helpers\BaseJson;
 
-Yii::setAlias('@pathFile', 'Tags.json');
 
 /**
  * Class JSON отвечает за сборку и генерацию с

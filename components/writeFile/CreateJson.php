@@ -33,12 +33,8 @@ class CreateJson implements WriteInterface
      * @param string $content - текст записывавемый в файл
      * @return bool
      */
-    public function write($content)
+    public function write($content): bool
     {
-        if (file_put_contents($this->path, $content)) {
-            return true;
-        } else {
-            return false;
-        }
+        return file_put_contents($this->path, $content);
     }
 }
