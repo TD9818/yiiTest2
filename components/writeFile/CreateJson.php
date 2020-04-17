@@ -3,23 +3,42 @@
 
 namespace app\components\writeFile;
 
-use Yii;
-use app\components\JSON;
 
-class CreateJson implements IWrite
+/**
+ * Class CreateJson - запись данных в файл в формате .json
+ * @package app\components\writeFile
+ */
+class CreateJson implements WriteInterface
 {
     private $path;
+    private $url;
+    private $api;
 
-    function __construct()
+    /**
+     * CreateJson constructor.
+     * @param string $path - хранит путь к обрабатываемому файлу
+     * @param string $url - хронит адрес в классе
+     * @param string $api - хронит версию API в классе
+     */
+    function __construct($path, $url, $api)
     {
-        $this->path = Yii::$app->params['pathFileJson'];
+        $this->path = $path;
+        $this->url = $url;
+        $this->api = $api;
     }
 
-    public function saveFags()
+    /**
+     * write - осуществляет запись в файл
+     *
+     * @param string $content - текст записывавемый в файл
+     * @return bool
+     */
+    public function write($content)
     {
-        // TODO: Implement saveFags() method.
-
-        $json = new JSON;
-        file_put_contents($this->path, $json->GetFile('master'));
+        if (file_put_contents($this->path, $content)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
