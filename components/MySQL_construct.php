@@ -26,16 +26,18 @@ class MySQL_construct
      */
     private $url;
     private $api;
+    private $json;
 
     /**
      * MySQL_construct constructor.
-     * @param string $url - принимает актуальный URL
-     * @param string $api - принимает
+     * @param JsonInterface $json
+     * @param array $config
      */
-    function __construct($url, $api)
+    function __construct(JsonInterface $json, $config = [])
     {
-        $this->url = $url;
-        $this->api = $api;
+        $this->json = $json;
+        $this->url = $config['url'];
+        $this->api = $config['api'];
     }
 
     /**
@@ -49,15 +51,9 @@ class MySQL_construct
     public function writeIdRepos($nameID)
     {
         $i = 1;
-        $json = new JSON(
-            $this->url,
-            $this->api
-        );
-
-
         foreach (
-            $json->newClientApiGitlab(
-                $json->constructURL(
+            $this->json->newClientApiGitlab(
+                $this->json->constructURL(
                     $this->url,
                     $this->api,
                     self::URLToID,

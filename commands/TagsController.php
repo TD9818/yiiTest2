@@ -4,7 +4,6 @@ namespace app\commands;
 
 use app\components\JSON;
 use Yii;
-use app\migrations\m200331_064952_MigrTabl;
 use yii\console\Controller;
 use yii\console\ExitCode;
 use app\components\writers\FileWriter;
@@ -30,7 +29,7 @@ class TagsController extends Controller
         $api = Yii::$app->params['API_Vgitlab'];
 
         $json = new JSON($url, $api);
-        $file = new FileWriter($path,  $url, $api);
+        $file = new FileWriter($path, $url, $api);
 
         if ($file->write($json->getTags('master'))) {
             echo ' -> JSON file Creation Successful';
@@ -61,9 +60,16 @@ class TagsController extends Controller
      */
     public function actionAddTagsInBase()
     {
-        $newTable = new MySQL_construct(
+        $json = new JSON(
             Yii::$app->params['URLgitlab'],
-            Yii::$app->params['API_Vgitlab']
+            $api = Yii::$app->params['API_Vgitlab']
+        );
+        $newTable = new MySQL_construct(
+            $json,
+            [
+                'url' => Yii::$app->params['URLgitlab'],
+                'api' => Yii::$app->params['API_Vgitlab']
+            ]
         );
         if ($newTable->writeIdRepos(Yii::$app->params['userID'])) {
             echo ' -> Data collected successfully';
@@ -80,9 +86,16 @@ class TagsController extends Controller
      */
     public function actionDisplayBase()
     {
-        $newTable = new MySQL_construct(
+        $json = new JSON(
             Yii::$app->params['URLgitlab'],
-            Yii::$app->params['API_Vgitlab']
+            $api = Yii::$app->params['API_Vgitlab']
+        );
+        $newTable = new MySQL_construct(
+            $json,
+            [
+                'url' => Yii::$app->params['URLgitlab'],
+                'api' => Yii::$app->params['API_Vgitlab']
+            ]
         );
         $newTable->display();
         return ExitCode::OK;

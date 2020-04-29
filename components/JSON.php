@@ -11,7 +11,7 @@ use yii\helpers\BaseJson;
  * данных по тегам пользователя GitLab в формат .json
  * @package app\components
  */
-class JSON
+class JSON implements JsonInterface
 {
     /**
      * URLToID - часть адреса до ID проекта пользователя
@@ -36,7 +36,7 @@ class JSON
     /**
      * JSON constructor.
      * @param string $url - принимает актуальный URL
-     * @param string $api - принимает
+     * @param string $api - принимает версию API
      */
     function __construct($url, $api)
     {
